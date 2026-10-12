@@ -810,6 +810,7 @@ app.post("/api/users/login", async (req, res) => {
     try {
         // 2. Rechercher l'utilisateur dans MongoDB
         const user = await User.findOne({ email });
+        
 
         // 3. Vérifier si l'utilisateur existe
         if (!user) {
@@ -868,6 +869,7 @@ app.get("/", (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    console.log("Utilisateur trouvé :", !!user);
     if (!user) {
     return res.status(401).send("Email ou mot de passe incorrect.");
 }
