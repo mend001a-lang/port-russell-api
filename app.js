@@ -695,7 +695,7 @@ app.post("/reservations", async (req, res) => {
 }); // Ferme la route POST
 
 // DELETE : SUPPRIMER UNE RÉSERVATION
-app.delete("/reservations/:id", async (req, res) => {
+app.delete("/reservations/:id", verifierConnexion, async (req, res) => {
 
     const id = req.params.id;
 
@@ -1278,22 +1278,7 @@ app.post("/reservations/:id/delete", verifierConnexion, async (req, res) => {
         }
 
         // Sécurité temporaire : supprimer uniquement notre réservation de test
-       if (
-    reservation.catwayNumber !== 10 ||
-    !(
-        reservation.clientName === "Client Test Russell" ||
-        reservation.clientName === "Ocean Test Modifié"
-    ) ||
-    !(
-        reservation.boatName === "Ocean Test 10" ||
-        reservation.boatName === "Ocean Test Modifié"
-    )
-) {
-    return res.status(403).send(
-        "Suppression réservée à notre réservation de test."
-    );
-}
-
+       
         await Reservation.findByIdAndDelete(req.params.id);
 
         return res.redirect("/reservations");

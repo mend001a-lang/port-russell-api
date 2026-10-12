@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -51,16 +52,14 @@
                             Modifier
                         </a>
 
-                        <% if (reservation.clientName === "Ocean Test Modifié" && reservation.boatName === "Ocean Test 10") { %>
-                            <form
-                                action="/reservations/<%= reservation._id %>/delete"
-                                method="POST"
-                                style="display:inline;"
-                                onsubmit="return confirm('Supprimer cette réservation de test ?');"
-                            >
-                                <button type="submit">Supprimer</button>
-                            </form>
-                        <% } %>
+                        <form
+                            action="/reservations/<%= reservation._id %>/delete"
+                            method="POST"
+                            style="display:inline;"
+                            onsubmit="return confirm('Voulez-vous vraiment supprimer cette réservation ? Cette action est irréversible.');"
+                        >
+                            <button type="submit">Supprimer</button>
+                        </form>
                     </td>
                 </tr>
             <% }) %>
