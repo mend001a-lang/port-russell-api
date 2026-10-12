@@ -899,6 +899,15 @@ res.cookie("token", token, {
 
     return res.redirect("/dashboard");
 });
+app.get("/logout", (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production"
+    });
+
+    return res.redirect("/");
+});
 
 function verifierConnexion(req, res, next) {
     const token = req.cookies?.token;
