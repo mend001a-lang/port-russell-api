@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation API - Port Russell</title>
+</head>
+<body>
+
+    <h1>Documentation API - Port Russell</h1>
+
+    <p>
+        Bienvenue dans la documentation de l'API
+        du Port de Plaisance Russell.
+    </p>
+
+    <h2>Présentation</h2>
+
+    <p>
+        Cette application permet de gérer les catways,
+        les réservations et les utilisateurs du port.
+    </p>
+
+    <h2>Technologies utilisées</h2>
+
+    <ul>
+        <li>Node.js</li>
+        <li>Express.js</li>
+        <li>MongoDB Atlas</li>
+        <li>Mongoose</li>
+        <li>EJS</li>
+    </ul>
+
+    <h2>Authentification</h2>
+
+    <p>
+        POST /login : connexion d'un utilisateur.
+    </p>
+
+    <p>
+        GET /logout : déconnexion de l'utilisateur.
+    </p>
+
+    <h2>Gestion des catways</h2>
+
+<p>GET /api/catways : liste des catways.</p>
+
+<p>GET /api/catways/:id : détails d'un catway.</p>
+
+<p>POST /catways : créer un catway.</p>
+
+<p>PUT /catways/:id : modifier l'état d'un catway.</p>
+
+<p>DELETE /catways/:id : supprimer un catway.</p>
+
+    <h2>Gestion des réservations</h2>
+
+<p>GET /api/reservations : liste des réservations.</p>
+<p>GET /api/reservations/:id : détails d'une réservation.</p>
+
+<h3>Réservations par catway</h3>
+
+<p>GET /catways/:id/reservations : liste des réservations.</p>
+<p>GET /catways/:id/reservations/:reservationId : détails d'une réservation.</p>
+<p>POST /catways/:id/reservations : créer une réservation.</p>
+<p>PUT /catways/:id/reservations/:reservationId : modifier une réservation.</p>
+<p>DELETE /catways/:id/reservations/:reservationId : supprimer une réservation.</p>
+    <h2>Gestion des utilisateurs</h2>
+
+<p>GET /users : liste des utilisateurs.</p>
+
+<p>GET /users/:email : consulter un utilisateur par email.</p>
+
+<p>POST /users : créer un utilisateur.</p>
+
+<p>PUT /users/:email : modifier un utilisateur.</p>
+
+<p>DELETE /users/:email : supprimer un utilisateur.</p>
+    <hr>
+
+    <a href="/dashboard">Retour au tableau de bord</a>
+
+</body>
+</html>

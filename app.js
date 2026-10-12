@@ -297,6 +297,308 @@ return res.status(200).json({
         });
     }
 });
+
+// =====================================
+// GET : RÉSERVATIONS D'UN CATWAY
+// =====================================
+
+app.get("/catways/:id/reservations", verifierConnexion, async (req, res) => {
+    try {
+        const numero = Number(req.params.id);
+
+        if (!Number.isInteger(numero) || numero <= 0) {
+            return res.status(400).json({
+                message: "Numéro de catway invalide."
+            });
+        }
+
+        const catway = await Catway.findOne({
+            catwayNumber: numero
+        });
+
+        if (!catway) {
+            return res.status(404).json({
+                message: "Catway introuvable."
+            });
+        }
+
+        const reservations = await Reservation.find({
+            catwayNumber: numero
+        });
+
+        return res.status(200).json(reservations);
+
+    } catch (error) {
+        console.error("Erreur réservations du catway :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de récupérer les réservations."
+        });
+    }
+});
+
+// =====================================
+// GET : UNE RÉSERVATION D'UN CATWAY
+// =====================================
+
+app.get("/catways/:id/reservations/:reservationId", verifierConnexion, async (req, res) => {
+    try {
+        const numero = Number(req.params.id);
+        const reservationId = req.params.reservationId;
+
+        if (!Number.isInteger(numero) || numero <= 0) {
+            return res.status(400).json({
+                message: "Numéro de catway invalide."
+            });
+        }
+
+        if (!mongoose.isValidObjectId(reservationId)) {
+            return res.status(400).json({
+                message: "Identifiant de réservation invalide."
+            });
+        }
+
+        const reservation = await Reservation.findOne({
+            _id: reservationId,
+            catwayNumber: numero
+        });
+
+        if (!reservation) {
+            return res.status(404).json({
+                message: "Réservation introuvable pour ce catway."
+            });
+        }
+
+        return res.status(200).json(reservation);
+
+    } catch (error) {
+        console.error("Erreur récupération réservation :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de récupérer la réservation."
+        });
+    }
+});
+
+// =====================================
+// POST : CRÉER UNE RÉSERVATION D'UN CATWAY
+// =====================================
+
+app.post("/catways/:id/reservations", verifierConnexion, async (req, res) => {
+    try {
+        const numero = Number(req.params.id);
+        const { clientName, boatName, startDate, endDate } = req.body;
+
+        if (!Number.isInteger(numero) || numero <= 0) {
+            return res.status(400).json({
+                message: "Numéro de catway invalide."
+            });
+        }
+
+        if (
+            typeof clientName !== "string" || !clientName.trim() ||
+            typeof boatName !== "string" || !boatName.trim() ||
+            !startDate || !endDate
+        ) {
+            return res.status(400).json({
+                message: "Tous les champs sont obligatoires."
+            });
+        }
+
+        const debut = new Date(startDate);
+        const fin = new Date(endDate);
+
+        if (
+            !Number.isFinite(debut.getTime()) ||
+            !Number.isFinite(fin.getTime()) ||
+            fin <= debut
+        ) {
+            return res.status(400).json({
+                message: "Dates de réservation invalides."
+            });
+        }
+
+        const catway = await Catway.findOne({
+            catwayNumber: numero
+        });
+
+        if (!catway) {
+            return res.status(404).json({
+                message: "Catway introuvable."
+            });
+        }
+
+        const conflit = await Reservation.findOne({
+            catwayNumber: numero,
+            startDate: { $lt: fin },
+            endDate: { $gt: debut }
+        });
+
+        if (conflit) {
+            return res.status(409).json({
+                message: "Catway déjà réservé pour cette période."
+            });
+        }
+
+        const reservation = await Reservation.create({
+            catwayNumber: numero,
+            clientName: clientName.trim(),
+            boatName: boatName.trim(),
+            startDate: debut,
+            endDate: fin
+        });
+
+        return res.status(201).json({
+            message: "Réservation créée avec succès.",
+            reservation
+        });
+
+    } catch (error) {
+        console.error("Erreur création réservation :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de créer la réservation."
+        });
+    }
+});
+
+// =====================================
+// PUT : MODIFIER UNE RÉSERVATION D'UN CATWAY
+// =====================================
+
+app.put("/catways/:id/reservations/:reservationId", verifierConnexion, async (req, res) => {
+    try {
+        const numero = Number(req.params.id);
+        const reservationId = req.params.reservationId;
+        const { clientName, boatName, startDate, endDate } = req.body;
+
+        if (!Number.isInteger(numero) || numero <= 0) {
+            return res.status(400).json({
+                message: "Numéro de catway invalide."
+            });
+        }
+
+        if (!mongoose.isValidObjectId(reservationId)) {
+            return res.status(400).json({
+                message: "Identifiant de réservation invalide."
+            });
+        }
+
+        if (
+            typeof clientName !== "string" || !clientName.trim() ||
+            typeof boatName !== "string" || !boatName.trim() ||
+            !startDate || !endDate
+        ) {
+            return res.status(400).json({
+                message: "Tous les champs sont obligatoires."
+            });
+        }
+
+        const debut = new Date(startDate);
+        const fin = new Date(endDate);
+
+        if (
+            !Number.isFinite(debut.getTime()) ||
+            !Number.isFinite(fin.getTime()) ||
+            fin <= debut
+        ) {
+            return res.status(400).json({
+                message: "Dates invalides."
+            });
+        }
+
+        const reservation = await Reservation.findOne({
+            _id: reservationId,
+            catwayNumber: numero
+        });
+
+        if (!reservation) {
+            return res.status(404).json({
+                message: "Réservation introuvable pour ce catway."
+            });
+        }
+
+        const conflit = await Reservation.findOne({
+            _id: { $ne: reservationId },
+            catwayNumber: numero,
+            startDate: { $lt: fin },
+            endDate: { $gt: debut }
+        });
+
+        if (conflit) {
+            return res.status(409).json({
+                message: "Ce catway est déjà réservé pour cette période."
+            });
+        }
+
+        reservation.clientName = clientName.trim();
+        reservation.boatName = boatName.trim();
+        reservation.startDate = debut;
+        reservation.endDate = fin;
+
+        await reservation.save();
+
+        return res.status(200).json({
+            message: "Réservation modifiée avec succès.",
+            reservation
+        });
+
+    } catch (error) {
+        console.error("Erreur modification réservation :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de modifier la réservation."
+        });
+    }
+});
+// =====================================
+// DELETE : SUPPRIMER UNE RÉSERVATION D'UN CATWAY
+// =====================================
+
+app.delete("/catways/:id/reservations/:reservationId", verifierConnexion, async (req, res) => {
+    try {
+        const numero = Number(req.params.id);
+        const reservationId = req.params.reservationId;
+
+        // Vérifier le numéro du catway
+        if (!Number.isInteger(numero) || numero <= 0) {
+            return res.status(400).json({
+                message: "Numéro de catway invalide."
+            });
+        }
+
+        // Vérifier l'identifiant MongoDB
+        if (!mongoose.isValidObjectId(reservationId)) {
+            return res.status(400).json({
+                message: "Identifiant de réservation invalide."
+            });
+        }
+
+        // Supprimer uniquement si la réservation appartient au catway
+        const reservation = await Reservation.findOneAndDelete({
+            _id: reservationId,
+            catwayNumber: numero
+        });
+
+        if (!reservation) {
+            return res.status(404).json({
+                message: "Réservation introuvable pour ce catway."
+            });
+        }
+
+        return res.status(200).json({
+            message: "Réservation supprimée avec succès."
+        });
+
+    } catch (error) {
+        console.error("Erreur suppression réservation :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de supprimer la réservation."
+        });
+    }
+});
+
 // =====================================
 // GET : RÉCUPÉRER TOUTES LES RÉSERVATIONS
 // =====================================
@@ -429,8 +731,38 @@ console.log(
 );
 
 const PORT = 3001;
+
 app.get("/test-connexion", (req, res) => {
     res.send("MAGIC CHEF : serveur Port Russell !");
+});
+
+// =====================================
+// GET : CONSULTER UN UTILISATEUR PAR EMAIL
+// =====================================
+
+app.get("/users/:email", verifierConnexion, async (req, res) => {
+    try {
+        const email = req.params.email.trim().toLowerCase();
+
+        const utilisateur = await User.findOne({
+            email: email
+        }).select("-password");
+
+        if (!utilisateur) {
+            return res.status(404).json({
+                message: "Utilisateur introuvable."
+            });
+        }
+
+        return res.status(200).json(utilisateur);
+
+    } catch (error) {
+        console.error("Erreur recherche utilisateur :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de récupérer cet utilisateur."
+        });
+    }
 });
 // Route d'inscription des utilisateurs
 app.post("/api/users/register", async (req, res) => {
@@ -957,21 +1289,31 @@ app.post("/reservations/:id/delete", verifierConnexion, async (req, res) => {
     }
 });
 
-// Afficher la page de gestion des utilisateurs
+
+// =====================================
+// GET : LISTE DES UTILISATEURS
+// =====================================
+
 app.get("/users", verifierConnexion, async (req, res) => {
     try {
         const users = await User.find()
-            .select("name email")
+            .select("-password")
             .sort({ name: 1 });
 
+        // Réponse JSON pour les clients API
+        if (req.accepts("html") !== "html") {
+            return res.status(200).json(users);
+        }
+
+        // Page HTML pour le navigateur
         return res.render("users", { users });
 
     } catch (error) {
         console.error("Erreur récupération utilisateurs :", error.message);
 
-        return res.status(500).send(
-            "Impossible de charger les utilisateurs."
-        );
+        return res.status(500).json({
+            message: "Impossible de charger les utilisateurs."
+        });
     }
 });
 
@@ -1028,6 +1370,178 @@ app.post("/users/create", verifierConnexion, async (req, res) => {
         return res.status(500).send(
             "Impossible de créer cet utilisateur."
         );
+    }
+});
+// =====================================
+// POST : CRÉER UN UTILISATEUR (API REST)
+// =====================================
+
+app.post("/users", verifierConnexion, async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+
+        if (
+            typeof username !== "string" ||
+            !username.trim() ||
+            typeof email !== "string" ||
+            !email.trim() ||
+            typeof password !== "string" ||
+            password.length < 8
+        ) {
+            return res.status(400).json({
+                message: "Username, email et mot de passe de 8 caractères minimum obligatoires."
+            });
+        }
+
+        const emailNormalise = email.trim().toLowerCase();
+
+        const utilisateurExistant = await User.findOne({
+            email: emailNormalise
+        });
+
+        if (utilisateurExistant) {
+            return res.status(409).json({
+                message: "Cette adresse email est déjà utilisée."
+            });
+        }
+
+        const motDePasseHache = await bcrypt.hash(password, 10);
+
+        const utilisateur = await User.create({
+            name: username.trim(),
+            username: username.trim(),
+            email: emailNormalise,
+            password: motDePasseHache
+        });
+
+        return res.status(201).json({
+            message: "Utilisateur créé avec succès.",
+            utilisateur: {
+                id: utilisateur._id,
+                username: utilisateur.username,
+                email: utilisateur.email
+            }
+        });
+
+    } catch (error) {
+        console.error("Erreur création utilisateur API :", error.message);
+
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "Cette adresse email est déjà utilisée."
+            });
+        }
+
+        return res.status(500).json({
+            message: "Impossible de créer cet utilisateur."
+        });
+    }
+});
+
+// =====================================
+// PUT : MODIFIER UN UTILISATEUR
+// =====================================
+
+app.put("/users/:email", verifierConnexion, async (req, res) => {
+    try {
+        const email = req.params.email.trim().toLowerCase();
+        const { username, password } = req.body;
+
+        if (typeof username !== "string" || !username.trim()) {
+            return res.status(400).json({
+                message: "Le nom d'utilisateur est obligatoire."
+            });
+        }
+
+        const utilisateur = await User.findOne({ email });
+
+        if (!utilisateur) {
+            return res.status(404).json({
+                message: "Utilisateur introuvable."
+            });
+        }
+
+        // Mettre à jour le nom
+        utilisateur.username = username.trim();
+        utilisateur.name = username.trim();
+
+        // Modifier le mot de passe uniquement s'il est fourni
+        if (password !== undefined) {
+            if (typeof password !== "string" || password.length < 8) {
+                return res.status(400).json({
+                    message: "Le mot de passe doit contenir au moins 8 caractères."
+                });
+            }
+
+            utilisateur.password = await bcrypt.hash(password, 10);
+        }
+
+        await utilisateur.save();
+
+        return res.status(200).json({
+            message: "Utilisateur modifié avec succès.",
+            utilisateur: {
+                id: utilisateur._id,
+                username: utilisateur.username,
+                email: utilisateur.email
+            }
+        });
+
+    } catch (error) {
+        console.error("Erreur modification utilisateur :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de modifier cet utilisateur."
+        });
+    }
+});
+
+// =====================================
+// DELETE : SUPPRIMER UN UTILISATEUR
+// =====================================
+
+app.delete("/users/:email", verifierConnexion, async (req, res) => {
+    try {
+        const email = req.params.email.trim().toLowerCase();
+
+        const utilisateur = await User.findOne({ email });
+
+        if (!utilisateur) {
+            return res.status(404).json({
+                message: "Utilisateur introuvable."
+            });
+        }
+
+        // Empêcher la suppression de son propre compte
+        // Le compte connecté est identifié par son JWT
+        const token = req.cookies?.token;
+
+        if (!token) {
+            return res.status(401).json({
+                message: "Authentification requise."
+            });
+        }
+
+        const donneesToken = jwt.verify(token, process.env.JWT_SECRET);
+
+       if (String(donneesToken.userId) === String(utilisateur._id)) {
+            return res.status(403).json({
+                message: "Vous ne pouvez pas supprimer votre propre compte."
+            });
+        }
+
+        await User.deleteOne({ _id: utilisateur._id });
+
+        return res.status(200).json({
+            message: "Utilisateur supprimé avec succès."
+        });
+
+    } catch (error) {
+        console.error("Erreur suppression utilisateur :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de supprimer cet utilisateur."
+        });
     }
 });
 
@@ -1119,6 +1633,20 @@ app.post("/users/:email/delete", verifierConnexion, async (req, res) => {
         );
     }
 });
+
+app.get("/api-docs", verifierConnexion, (req, res) => {
+  res.render("api-docs");
+});
+
+console.log(
+    "Routes enregistrées :",
+    app.router.stack
+        .filter(couche => couche.route)
+        .map(couche => ({
+            chemin: couche.route.path,
+            methodes: couche.route.methods
+        }))
+);
 
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
