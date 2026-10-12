@@ -871,15 +871,15 @@ app.get("/", (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    console.log("Email reçu (diagnostic) :", JSON.stringify(email));
-    console.log("Utilisateur trouvé :", !!user);
-    console.log("Identifiant utilisateur :", user?._id.toString() || "introuvable");
+    
+    
+    
     if (!user) {
     return res.status(401).send("Email ou mot de passe incorrect.");
 }
-console.log("Longueur mot de passe reçu :", (password || "").length);
+
 const passwordValide = await bcrypt.compare(password || "", user.password);
-console.log("Mot de passe valide :", passwordValide);
+
 if (!passwordValide) {
     return res.status(401).send("Email ou mot de passe incorrect.");
 }
@@ -895,7 +895,7 @@ res.cookie("token", token, {
     maxAge: 60 * 60 * 1000
 });
 
-    console.log("Tentative de connexion :", email);
+    
 
     return res.redirect("/dashboard");
 });
