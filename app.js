@@ -873,6 +873,7 @@ app.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
     console.log("Email reçu (diagnostic) :", JSON.stringify(email));
     console.log("Utilisateur trouvé :", !!user);
+    console.log("Identifiant utilisateur :", user?._id.toString() || "introuvable");
     if (!user) {
     return res.status(401).send("Email ou mot de passe incorrect.");
 }
