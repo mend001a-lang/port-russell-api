@@ -875,6 +875,7 @@ app.post("/login", async (req, res) => {
     return res.status(401).send("Email ou mot de passe incorrect.");
 }
 const passwordValide = await bcrypt.compare(password || "", user.password);
+console.log("Mot de passe valide :", passwordValide);
 if (!passwordValide) {
     return res.status(401).send("Email ou mot de passe incorrect.");
 }
