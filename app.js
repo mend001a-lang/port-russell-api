@@ -51,6 +51,8 @@ app.use(cookieParser());
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("Connexion à MongoDB réussie !");
+
+        console.log("Base MongoDB utilisée :", mongoose.connection.name);
     })
     .catch((error) => {
         console.error(
