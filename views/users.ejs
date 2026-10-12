@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilisateurs - Port Russell</title>
+</head>
+<body>
+
+    <h1>Gestion des utilisateurs</h1>
+
+    <nav>
+        <a href="/dashboard">Tableau de bord</a>
+        <a href="/catways">Catways</a>
+        <a href="/reservations">Réservations</a>
+        <a href="/logout">Déconnexion</a>
+    </nav>
+
+    <h2>Liste des utilisateurs</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% users.forEach(user => { %>
+                <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.email %></td>
+                  <td>
+    <a href="/users/<%= encodeURIComponent(user.email) %>/edit">
+        Modifier
+    </a>
+    <% if (user.email === "demo.russell@example.com") { %>
+    <form
+        action="/users/<%= encodeURIComponent(user.email) %>/delete"
+        method="POST"
+        style="display:inline;"
+        onsubmit="return confirm('Supprimer cet utilisateur de démonstration ?');"
+    >
+        <button type="submit">Supprimer</button>
+    </form>
+<% } %>
+</td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <p>
+        <a href="/dashboard">Retour au tableau de bord</a>
+    </p>
+
+</body>
+</html>

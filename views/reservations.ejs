@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations - Port Russell</title>
+</head>
+<body>
+
+    <h1>Gestion des réservations</h1>
+
+    <nav>
+        <a href="/dashboard">Tableau de bord</a>
+        <a href="/catways">Catways</a>
+        <a href="/users">Utilisateurs</a>
+        <a href="/logout">Déconnexion</a>
+    </nav>
+
+    <p>
+        <a href="/reservations/create">➕ Ajouter une réservation</a>
+    </p>
+
+    <h2>Liste des réservations</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Catway</th>
+                <th>Client</th>
+                <th>Bateau</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% reservations.forEach(reservation => { %>
+                <tr>
+                    <td><%= reservation.catwayNumber %></td>
+                    <td><%= reservation.clientName %></td>
+                    <td><%= reservation.boatName %></td>
+                    <td>
+                        <%= new Date(reservation.startDate).toLocaleDateString("fr-FR") %>
+                    </td>
+                    <td>
+                        <%= new Date(reservation.endDate).toLocaleDateString("fr-FR") %>
+                    </td>
+                    <td>
+                        <a href="/reservations/<%= reservation._id %>/edit">
+                            Modifier
+                        </a>
+
+                        <% if (reservation.clientName === "Ocean Test Modifié" && reservation.boatName === "Ocean Test 10") { %>
+                            <form
+                                action="/reservations/<%= reservation._id %>/delete"
+                                method="POST"
+                                style="display:inline;"
+                                onsubmit="return confirm('Supprimer cette réservation de test ?');"
+                            >
+                                <button type="submit">Supprimer</button>
+                            </form>
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <p>
+        <a href="/dashboard">Retour au tableau de bord</a>
+    </p>
+
+</body>
+</html>

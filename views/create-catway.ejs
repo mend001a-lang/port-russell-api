@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un catway - Port Russell</title>
+</head>
+<body>
+
+    <h1>Ajouter un catway</h1>
+
+    <form action="/catways/create" method="POST">
+
+        <label for="catwayNumber">Numéro du catway :</label>
+        <input type="number" id="catwayNumber"
+               name="catwayNumber" min="1" required>
+
+        <label for="catwayType">Type :</label>
+        <select id="catwayType" name="catwayType" required>
+            <option value="long">Long</option>
+            <option value="short">Short</option>
+        </select>
+
+        <label for="catwayState">État :</label>
+        <input type="text" id="catwayState"
+               name="catwayState" required>
+
+        <button type="submit">Ajouter le catway</button>
+
+    </form>
+
+    <p><a href="/catways">Retour aux catways</a></p>
+
+</body>
+</html>

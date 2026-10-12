@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des catways - Port Russell</title>
+</head>
+<body>
+
+    <h1>Gestion des catways</h1>
+
+    <nav>
+        <a href="/dashboard">Tableau de bord</a>
+        <a href="/reservations">Réservations</a>
+        <a href="/users">Utilisateurs</a>
+        <a href="/logout">Déconnexion</a>
+    </nav>
+
+    <h2>Liste des catways</h2>
+    <p>
+    <a href="/catways/create">+ Ajouter un catway</a>
+</p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Type</th>
+                <th>État</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% catways.forEach(catway => { %>
+                <tr>
+                    <td><%= catway.catwayNumber %></td>
+                    <td><%= catway.catwayType %></td>
+                    <td><%= catway.catwayState %></td>
+                    <td>
+    <td>
+    <a href="/catways/<%= catway._id %>/edit">
+        Modifier
+    </a>
+
+    <% if (catway.catwayNumber === 25) { %>
+        <form
+            action="/catways/<%= catway._id %>/delete"
+            method="POST"
+            style="display:inline;"
+            onsubmit="return confirm('Supprimer ce catway de test ?');"
+        >
+            <button type="submit">Supprimer</button>
+        </form>
+    <% } %>
+</td>
+</td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+</body>
+</html>

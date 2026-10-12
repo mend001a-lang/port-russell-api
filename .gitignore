@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Dépendances Node.js
+node_modules/
+
+# Variables secrètes
+.env
+.env.*
+
+# Exception pour un éventuel fichier d'exemple
+!.env.example
+
+# Fichiers de logs
+*.log
+
+# Fichiers système
+.DS_Store
+Thumbs.db

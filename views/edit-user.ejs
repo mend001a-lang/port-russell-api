@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un utilisateur - Port Russell</title>
+</head>
+<body>
+
+    <h1>Modifier un utilisateur</h1>
+
+    <form action="/users/<%= encodeURIComponent(user.email) %>/edit" method="POST">
+
+        <p>
+            <label for="name">Nom :</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                value="<%= user.name %>"
+                required
+            >
+        </p>
+
+        <p>
+            <label for="email">Email :</label>
+            <input
+                type="email"
+                id="email"
+                value="<%= user.email %>"
+                readonly
+            >
+        </p>
+
+        <p>
+            <label for="password">Nouveau mot de passe (facultatif) :</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                minlength="8"
+                autocomplete="new-password"
+            >
+        </p>
+
+        <button type="submit">Enregistrer les modifications</button>
+
+    </form>
+
+    <p>
+        <a href="/users">Retour aux utilisateurs</a>
+    </p>
+
+</body>
+</html>

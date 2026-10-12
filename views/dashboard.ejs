@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Port Russell</title>
+</head>
+<body>
+
+    <header>
+        <h1>Tableau de bord - Port Russell</h1>
+
+        <nav>
+            <a href="/dashboard">Accueil</a>
+            <a href="/catways">Catways</a>
+            <a href="/reservations">Réservations</a>
+            <a href="/users">Utilisateurs</a>
+            <a href="/api-docs">Documentation API</a>
+            <a href="/logout">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Bienvenue à la capitainerie</h2>
+
+        <p>Utilisateur : <%= username %></p>
+        <p>Email : <%= email %></p>
+        <p>Date du jour : <%= dateDuJour %></p>
+
+        <section>
+            <h2>Réservations en cours</h2>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Catway</th>
+                        <th>Client</th>
+                        <th>Bateau</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% reservations.forEach(reservation => { %>
+                        <tr>
+                            <td><%= reservation.catwayNumber %></td>
+                            <td><%= reservation.clientName %></td>
+                            <td><%= reservation.boatName %></td>
+                            <td><%= reservation.startDate %></td>
+                            <td><%= reservation.endDate %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier une réservation - Port Russell</title>
+</head>
+<body>
+
+    <h1>Modifier une réservation</h1>
+
+    <form action="/reservations/<%= reservation._id %>/edit" method="POST">
+
+        <p>
+            <label for="catwayNumber">Numéro du catway :</label>
+            <input
+                type="number"
+                id="catwayNumber"
+                name="catwayNumber"
+                value="<%= reservation.catwayNumber %>"
+                min="1"
+                required
+            >
+        </p>
+
+        <p>
+            <label for="clientName">Nom du client :</label>
+            <input
+                type="text"
+                id="clientName"
+                name="clientName"
+                value="<%= reservation.clientName %>"
+                required
+            >
+        </p>
+
+        <p>
+            <label for="boatName">Nom du bateau :</label>
+            <input
+                type="text"
+                id="boatName"
+                name="boatName"
+                value="<%= reservation.boatName %>"
+                required
+            >
+        </p>
+
+        <p>
+            <label for="startDate">Date de début :</label>
+            <input
+                type="date"
+                id="startDate"
+                name="startDate"
+                value="<%= new Date(reservation.startDate).toISOString().slice(0, 10) %>"
+                required
+            >
+        </p>
+
+        <p>
+            <label for="endDate">Date de fin :</label>
+            <input
+                type="date"
+                id="endDate"
+                name="endDate"
+               value="<%= new Date(reservation.endDate).toISOString().slice(0, 10) %>"
+                required
+            >
+        </p>
+
+        <button type="submit">Enregistrer les modifications</button>
+
+    </form>
+
+    <p>
+        <a href="/reservations">Retour aux réservations</a>
+    </p>
+
+</body>
+</html>
