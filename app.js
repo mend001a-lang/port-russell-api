@@ -4,32 +4,9 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const verifierTokenMiddleware = require("./middlewares/verifierToken");
 // Middleware de vérification du token JWT
-function verifierToken(req, res, next) {
-const authHeader = req.headers.authorization;
-if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({
-        message: "Token manquant ou format incorrect."
-    });
-}
-const token = authHeader.split(" ")[1];
-if (!token) {
-    return res.status(401).json({
-        message: "Token manquant."
-    });
-    
-}
-try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-}
-catch (error) {
-    return res.status(401).json({
-        message: "Token invalide ou expiré."
-    });
-}
-}
+
 const Catway = require("./models/Catway");
 const Reservation = require("./models/Reservation");
 const User = require("./models/User");
@@ -61,13 +38,8 @@ mongoose.connect(process.env.MONGO_URI)
         );
     });
 
-// =====================================
-// ROUTE D'ACCUEIL
-// =====================================
 
-("/", (req, res) => {
-    res.send("Bienvenue sur l'API du Port Russell !");
-});
+
 
 // =====================================
 // GET : RÉCUPÉRER TOUS LES CATWAYS
@@ -852,7 +824,7 @@ const token = jwt.sign(
 
 
 // Route protégée : profil utilisateur
-app.get("/api/users/profile", verifierToken, (req, res) => {
+app.get("/api/users/profile", verifierTokenMiddleware, (req, res) => {
     res.status(200).json({
         message: "Bienvenue dans votre espace sécurisé !",
         userId: req.user.userId
