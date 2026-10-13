@@ -12,6 +12,7 @@ const Reservation = require("./models/Reservation");
 const User = require("./models/User");
 
 const userRoutes = require("./routes/userRoutes");
+const catwayRoutes = require("./routes/catwayRoutes");
 require("dotenv").config();
 
 // Création de l'application Express
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/users", userRoutes);
+app.use("/api/catways", catwayRoutes);
 
 // =====================================
 // CONNEXION À MONGODB
@@ -43,25 +45,6 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 
-
-// =====================================
-// GET : RÉCUPÉRER TOUS LES CATWAYS
-// =====================================
-
-app.get("/api/catways", async (req, res) => {
-    try {
-        const catways = await Catway.find();
-
-        return res.status(200).json(catways);
-
-    } catch (error) {
-        console.error(error.message);
-
-        return res.status(500).json({
-            message: "Erreur lors de la récupération des catways"
-        });
-    }
-});
 
 // =====================================
 // GET : RÉCUPÉRER UN CATWAY PAR NUMÉRO
