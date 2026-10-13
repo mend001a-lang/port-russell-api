@@ -742,14 +742,6 @@ app.get("/users/:email", verifierConnexion, async (req, res) => {
 });
 
 
-// Route protégée : profil utilisateur
-app.get("/api/users/profile", verifierTokenMiddleware, (req, res) => {
-    res.status(200).json({
-        message: "Bienvenue dans votre espace sécurisé !",
-        userId: req.user.userId
-    });
-});
-
 
 // Démarrage du serveur
 // Page d'accueil du Port Russell

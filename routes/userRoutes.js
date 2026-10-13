@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const verifierTokenMiddleware = require("../middlewares/verifierToken");
 
 const router = express.Router();
 router.post("/register", async (req, res) => {
@@ -98,5 +99,12 @@ router.post("/login", async (req, res) => {
     }
 });
 
+
+router.get("/profile", verifierTokenMiddleware, (req, res) => {
+    res.status(200).json({
+        message: "Bienvenue dans votre espace sécurisé !",
+        userId: req.user.userId
+    });
+});
 
 module.exports = router;
