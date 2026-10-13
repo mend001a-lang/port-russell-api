@@ -343,10 +343,10 @@ app.get("/catways/:id/reservations", verifierConnexion, async (req, res) => {
 // GET : UNE RÉSERVATION D'UN CATWAY
 // =====================================
 
-app.get("/catways/:id/reservations/:reservationId", verifierConnexion, async (req, res) => {
+app.get("/catway/:id/reservations/:idReservation", verifierConnexion, async (req, res) => {
     try {
         const numero = Number(req.params.id);
-        const reservationId = req.params.reservationId;
+        const reservationId = req.params.idReservation;
 
         if (!Number.isInteger(numero) || numero <= 0) {
             return res.status(400).json({
@@ -468,11 +468,10 @@ app.post("/catways/:id/reservations", verifierConnexion, async (req, res) => {
 // PUT : MODIFIER UNE RÉSERVATION D'UN CATWAY
 // =====================================
 
-app.put("/catways/:id/reservations/:reservationId", verifierConnexion, async (req, res) => {
+app.put("/catways/:id/reservations", verifierConnexion, async (req, res) => {
     try {
         const numero = Number(req.params.id);
-        const reservationId = req.params.reservationId;
-        const { clientName, boatName, startDate, endDate } = req.body;
+        const { reservationId, clientName, boatName, startDate, endDate } = req.body;
 
         if (!Number.isInteger(numero) || numero <= 0) {
             return res.status(400).json({
@@ -505,7 +504,7 @@ app.put("/catways/:id/reservations/:reservationId", verifierConnexion, async (re
             fin <= debut
         ) {
             return res.status(400).json({
-                message: "Dates invalides."
+                message: "Dates de réservation invalides."
             });
         }
 
@@ -557,10 +556,10 @@ app.put("/catways/:id/reservations/:reservationId", verifierConnexion, async (re
 // DELETE : SUPPRIMER UNE RÉSERVATION D'UN CATWAY
 // =====================================
 
-app.delete("/catways/:id/reservations/:reservationId", verifierConnexion, async (req, res) => {
+app.delete("/catway/:id/reservations/:idReservation", verifierConnexion, async (req, res) => {
     try {
         const numero = Number(req.params.id);
-        const reservationId = req.params.reservationId;
+        const reservationId = req.params.idReservation;
 
         // Vérifier le numéro du catway
         if (!Number.isInteger(numero) || numero <= 0) {
