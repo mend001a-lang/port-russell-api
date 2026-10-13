@@ -10,6 +10,7 @@ const verifierTokenMiddleware = require("./middlewares/verifierToken");
 const Catway = require("./models/Catway");
 const Reservation = require("./models/Reservation");
 const User = require("./models/User");
+
 const userRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 
@@ -739,62 +740,6 @@ app.get("/users/:email", verifierConnexion, async (req, res) => {
         });
     }
 });
-
-
-// Route de connexion des utilisateurs
-
-app.post("/api/users/login", async (req, res) => {
-
-   const { email, password } = req.body || {};
-
-    // 1. Vérifier les champs obligatoires
-    if (!email || !password) {
-        return res.status(400).json({
-            message: "Email et mot de passe obligatoires."
-        });
-    }
-
-    try {
-        // 2. Rechercher l'utilisateur dans MongoDB
-        const user = await User.findOne({ email });
-        
-
-        // 3. Vérifier si l'utilisateur existe
-        if (!user) {
-            return res.status(401).json({
-                message: "Email ou mot de passe incorrect."
-            });
-        }
-
-        // 4. Vérifier le mot de passe avec bcrypt
-        const passwordValide = await bcrypt.compare(password, user.password);
-
-        if (!passwordValide) {
-            return res.status(401).json({
-                message: "Email ou mot de passe incorrect."
-            });
-        }
-const token = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-);
-        // 5. Connexion réussie
-        return res.status(200).json({
-    message: "Connexion réussie !",
-    token: token
-});
-
-    } catch (error) {
-        console.error("Erreur connexion :", error.message);
-
-        return res.status(500).json({
-            message: "Erreur interne du serveur."
-        });
-    }
-
-});
-
 
 
 // Route protégée : profil utilisateur
