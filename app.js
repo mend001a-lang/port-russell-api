@@ -10,6 +10,7 @@ const verifierTokenMiddleware = require("./middlewares/verifierToken");
 const Catway = require("./models/Catway");
 const Reservation = require("./models/Reservation");
 const User = require("./models/User");
+const userRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 
 // Création de l'application Express
@@ -20,6 +21,7 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use("/api/users", userRoutes);
 
 // =====================================
 // CONNEXION À MONGODB
@@ -737,36 +739,8 @@ app.get("/users/:email", verifierConnexion, async (req, res) => {
         });
     }
 });
-// Route d'inscription des utilisateurs
-app.post("/api/users/register", async (req, res) => {
-    console.log("TEST : route inscription appelée !");
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        return res.status(400).json({ message: "Tous les champs sont obligatoires." });
-       
 
-}
-try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-    return res.status(409).json({
-        message: "Cet email est déjà utilisé."
-    });
-}
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
-    await newUser.save();
-    return res.status(201).json({ message: "Utilisateur créé avec succès !" });
 
-} catch (error) {
-    console.error("Erreur inscription :", error.message);
-
-    return res.status(500).json({
-        message: "Erreur interne du serveur."
-    });
-}
-
-});
 // Route de connexion des utilisateurs
 
 app.post("/api/users/login", async (req, res) => {
