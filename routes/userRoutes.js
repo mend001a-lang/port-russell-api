@@ -1,11 +1,11 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
-const User = require("../models/User");
 const verifierTokenMiddleware = require("../middlewares/verifierToken");
+
 const {
     inscrireUtilisateur,
     connecterUtilisateur
 } = require("../controllers/userController");
+
 const router = express.Router();
 // Inscription d'un utilisateur
 router.post("/register", inscrireUtilisateur);
