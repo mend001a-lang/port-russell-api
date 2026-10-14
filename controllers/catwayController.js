@@ -107,8 +107,54 @@ return res.status(500).json({
     }
 };
 
+// Contrôleur pour modifier l'état d'un catway
+const modifierCatway = async (req, res) => {
+     try {
+    const id = Number(req.params.id);
+    // Vérifier que le numéro du catway est valide
+if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({
+        message: "Numéro de catway invalide"
+    });
+}
+// Récupérer le nouvel état du catway
+const { catwayState } = req.body || {};
+// Vérifier que le nouvel état est renseigné
+if (typeof catwayState !== "string" || catwayState.trim() === "") {
+    return res.status(400).json({
+        message: "Veuillez renseigner le nouvel état du catway"
+    });
+}
+// Modifier l'état du catway dans MongoDB
+const catwayModifie = await Catway.findOneAndUpdate(
+    { catwayNumber: id },
+    { catwayState: catwayState.trim() },
+    { returnDocument: "after" }
+);
+// Vérifier si le catway existe
+if (!catwayModifie) {
+    return res.status(404).json({
+        message: "Catway introuvable"
+    });
+}
+// Confirmer la modification du catway
+return res.status(200).json({
+    message: "Catway modifié avec succès",
+    catway: catwayModifie
+});
+    } catch (error) {
+console.error("Erreur modification catway :", error.message);
+
+return res.status(500).json({
+    message: "Erreur lors de la modification du catway"
+});
+    }
+};
+
+
 module.exports = {
     listerCatways,
     obtenirCatwayParId,
-    creerCatway
+    creerCatway,
+    modifierCatway
 };
