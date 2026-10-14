@@ -151,10 +151,47 @@ return res.status(500).json({
     }
 };
 
+// Contrôleur pour supprimer un catway
+const supprimerCatway = async (req, res) => {
+    try {
+    const id = Number(req.params.id);
+    // Vérifier que le numéro du catway est valide
+if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({
+        message: "Numéro de catway invalide"
+    });
+    
+}
+// Supprimer le catway dans MongoDB
+const catwaySupprime = await Catway.findOneAndDelete({
+    catwayNumber: id
+    
+});
+// Vérifier si le catway existe
+if (!catwaySupprime) {
+    return res.status(404).json({
+        message: "Catway introuvable"
+    });
+}
+// Confirmer la suppression du catway
+return res.status(200).json({
+    message: "Catway supprimé avec succès",
+    catway: catwaySupprime
+});
+    } catch (error) {
+        console.error("Erreur suppression catway :", error.message);
+
+        return res.status(500).json({
+            message: "Erreur lors de la suppression du catway"
+        });
+    }
+};
+
 
 module.exports = {
     listerCatways,
     obtenirCatwayParId,
     creerCatway,
-    modifierCatway
+    modifierCatway,
+    supprimerCatway
 };
