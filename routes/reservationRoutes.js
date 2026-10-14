@@ -15,6 +15,16 @@ router.get(
 );
 
 // =====================================
+// GET : UNE RÉSERVATION D'UN CATWAY
+// =====================================
+
+router.get(
+    "/catway/:id/reservations/:idReservation",
+    verifierConnexion,
+    reservationController.getReservationById
+);
+
+// =====================================
 // EXPORT DES ROUTES
 // =====================================
 
