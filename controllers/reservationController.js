@@ -266,9 +266,64 @@ const updateReservation = async (req, res) => {
 // EXPORT DU CONTRÔLEUR
 // =====================================
 
+
+// =====================================
+// DELETE : SUPPRIMER UNE RÉSERVATION
+// =====================================
+
+const deleteReservation = async (req, res) => {
+    try {
+        const numero = Number(req.params.id);
+        const reservationId = req.params.idReservation;
+
+        // Vérifier le numéro du catway
+        if (!Number.isInteger(numero) || numero <= 0) {
+            return res.status(400).json({
+                message: "Numéro de catway invalide."
+            });
+        }
+
+        // Vérifier l'identifiant MongoDB
+        if (!mongoose.isValidObjectId(reservationId)) {
+            return res.status(400).json({
+                message: "Identifiant de réservation invalide."
+            });
+        }
+
+        // Supprimer uniquement si la réservation appartient au catway
+        const reservation = await Reservation.findOneAndDelete({
+            _id: reservationId,
+            catwayNumber: numero
+        });
+
+        if (!reservation) {
+            return res.status(404).json({
+                message: "Réservation introuvable pour ce catway."
+            });
+        }
+
+        return res.status(200).json({
+            message: "Réservation supprimée avec succès."
+        });
+
+    } catch (error) {
+        console.error("Erreur suppression réservation :", error.message);
+
+        return res.status(500).json({
+            message: "Impossible de supprimer la réservation."
+        });
+    }
+};
+
+
+// =====================================
+// EXPORT DU CONTRÔLEUR
+// =====================================
+
 module.exports = {
     getReservationsByCatway,
     getReservationById,
     createReservation,
-    updateReservation
+    updateReservation,
+    deleteReservation
 };
