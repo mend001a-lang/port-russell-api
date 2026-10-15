@@ -1,4 +1,4 @@
-
+﻿
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -13,6 +13,7 @@ const User = require("./models/User");
 
 const userRoutes = require("./routes/userRoutes");
 const catwayRoutes = require("./routes/catwayRoutes");
+const reservationRoutes = require("./routes/reservationRoutes");
 require("dotenv").config();
 
 // Création de l'application Express
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/catways", catwayRoutes);
+app.use("/", reservationRoutes);
 
 // =====================================
 // CONNEXION À MONGODB
@@ -168,9 +170,25 @@ app.put("/catways/:id", async (req, res) => {
     } catch (error) {
         console.error("Erreur modification catway :", error.message);
 
-        return res.status(500).json({
-            message: "Erreur lors de la modification du catway"
-        });
+       // Modifier l'état du catway dans MongoDB
+const catwayModifie = await Catway.findOneAndUpdate(
+    { catwayNumber: id },
+    { catwayState: catwayState.trim() },
+    { new: true }
+);
+
+// Vérifier si le catway existe
+if (!catwayModifie) {
+    return res.status(404).json({
+        message: "Catway introuvable"
+    });
+}
+
+// Confirmer la modification
+return res.status(200).json({
+    message: "Catway modifié avec succès",
+    catway: catwayModifie
+});
     }
 });
 
@@ -214,306 +232,6 @@ return res.status(200).json({
 
         return res.status(500).json({
             message: "Erreur lors de la suppression du catway"
-        });
-    }
-});
-
-// =====================================
-// GET : RÉSERVATIONS D'UN CATWAY
-// =====================================
-
-app.get("/catways/:id/reservations", verifierConnexion, async (req, res) => {
-    try {
-        const numero = Number(req.params.id);
-
-        if (!Number.isInteger(numero) || numero <= 0) {
-            return res.status(400).json({
-                message: "Numéro de catway invalide."
-            });
-        }
-
-        const catway = await Catway.findOne({
-            catwayNumber: numero
-        });
-
-        if (!catway) {
-            return res.status(404).json({
-                message: "Catway introuvable."
-            });
-        }
-
-        const reservations = await Reservation.find({
-            catwayNumber: numero
-        });
-
-        return res.status(200).json(reservations);
-
-    } catch (error) {
-        console.error("Erreur réservations du catway :", error.message);
-
-        return res.status(500).json({
-            message: "Impossible de récupérer les réservations."
-        });
-    }
-});
-
-// =====================================
-// GET : UNE RÉSERVATION D'UN CATWAY
-// =====================================
-
-app.get("/catway/:id/reservations/:idReservation", verifierConnexion, async (req, res) => {
-    try {
-        const numero = Number(req.params.id);
-        const reservationId = req.params.idReservation;
-
-        if (!Number.isInteger(numero) || numero <= 0) {
-            return res.status(400).json({
-                message: "Numéro de catway invalide."
-            });
-        }
-
-        if (!mongoose.isValidObjectId(reservationId)) {
-            return res.status(400).json({
-                message: "Identifiant de réservation invalide."
-            });
-        }
-
-        const reservation = await Reservation.findOne({
-            _id: reservationId,
-            catwayNumber: numero
-        });
-
-        if (!reservation) {
-            return res.status(404).json({
-                message: "Réservation introuvable pour ce catway."
-            });
-        }
-
-        return res.status(200).json(reservation);
-
-    } catch (error) {
-        console.error("Erreur récupération réservation :", error.message);
-
-        return res.status(500).json({
-            message: "Impossible de récupérer la réservation."
-        });
-    }
-});
-
-// =====================================
-// POST : CRÉER UNE RÉSERVATION D'UN CATWAY
-// =====================================
-
-app.post("/catways/:id/reservations", verifierConnexion, async (req, res) => {
-    try {
-        const numero = Number(req.params.id);
-        const { clientName, boatName, startDate, endDate } = req.body;
-
-        if (!Number.isInteger(numero) || numero <= 0) {
-            return res.status(400).json({
-                message: "Numéro de catway invalide."
-            });
-        }
-
-        if (
-            typeof clientName !== "string" || !clientName.trim() ||
-            typeof boatName !== "string" || !boatName.trim() ||
-            !startDate || !endDate
-        ) {
-            return res.status(400).json({
-                message: "Tous les champs sont obligatoires."
-            });
-        }
-
-        const debut = new Date(startDate);
-        const fin = new Date(endDate);
-
-        if (
-            !Number.isFinite(debut.getTime()) ||
-            !Number.isFinite(fin.getTime()) ||
-            fin <= debut
-        ) {
-            return res.status(400).json({
-                message: "Dates de réservation invalides."
-            });
-        }
-
-        const catway = await Catway.findOne({
-            catwayNumber: numero
-        });
-
-        if (!catway) {
-            return res.status(404).json({
-                message: "Catway introuvable."
-            });
-        }
-
-        const conflit = await Reservation.findOne({
-            catwayNumber: numero,
-            startDate: { $lt: fin },
-            endDate: { $gt: debut }
-        });
-
-        if (conflit) {
-            return res.status(409).json({
-                message: "Catway déjà réservé pour cette période."
-            });
-        }
-
-        const reservation = await Reservation.create({
-            catwayNumber: numero,
-            clientName: clientName.trim(),
-            boatName: boatName.trim(),
-            startDate: debut,
-            endDate: fin
-        });
-
-        return res.status(201).json({
-            message: "Réservation créée avec succès.",
-            reservation
-        });
-
-    } catch (error) {
-        console.error("Erreur création réservation :", error.message);
-
-        return res.status(500).json({
-            message: "Impossible de créer la réservation."
-        });
-    }
-});
-
-// =====================================
-// PUT : MODIFIER UNE RÉSERVATION D'UN CATWAY
-// =====================================
-
-app.put("/catways/:id/reservations", verifierConnexion, async (req, res) => {
-    try {
-        const numero = Number(req.params.id);
-        const { reservationId, clientName, boatName, startDate, endDate } = req.body;
-
-        if (!Number.isInteger(numero) || numero <= 0) {
-            return res.status(400).json({
-                message: "Numéro de catway invalide."
-            });
-        }
-
-        if (!mongoose.isValidObjectId(reservationId)) {
-            return res.status(400).json({
-                message: "Identifiant de réservation invalide."
-            });
-        }
-
-        if (
-            typeof clientName !== "string" || !clientName.trim() ||
-            typeof boatName !== "string" || !boatName.trim() ||
-            !startDate || !endDate
-        ) {
-            return res.status(400).json({
-                message: "Tous les champs sont obligatoires."
-            });
-        }
-
-        const debut = new Date(startDate);
-        const fin = new Date(endDate);
-
-        if (
-            !Number.isFinite(debut.getTime()) ||
-            !Number.isFinite(fin.getTime()) ||
-            fin <= debut
-        ) {
-            return res.status(400).json({
-                message: "Dates de réservation invalides."
-            });
-        }
-
-        const reservation = await Reservation.findOne({
-            _id: reservationId,
-            catwayNumber: numero
-        });
-
-        if (!reservation) {
-            return res.status(404).json({
-                message: "Réservation introuvable pour ce catway."
-            });
-        }
-
-        const conflit = await Reservation.findOne({
-            _id: { $ne: reservationId },
-            catwayNumber: numero,
-            startDate: { $lt: fin },
-            endDate: { $gt: debut }
-        });
-
-        if (conflit) {
-            return res.status(409).json({
-                message: "Ce catway est déjà réservé pour cette période."
-            });
-        }
-
-        reservation.clientName = clientName.trim();
-        reservation.boatName = boatName.trim();
-        reservation.startDate = debut;
-        reservation.endDate = fin;
-
-        await reservation.save();
-
-        return res.status(200).json({
-            message: "Réservation modifiée avec succès.",
-            reservation
-        });
-
-    } catch (error) {
-        console.error("Erreur modification réservation :", error.message);
-
-        return res.status(500).json({
-            message: "Impossible de modifier la réservation."
-        });
-    }
-});
-// =====================================
-// DELETE : SUPPRIMER UNE RÉSERVATION D'UN CATWAY
-// =====================================
-
-app.delete("/catway/:id/reservations/:idReservation", verifierConnexion, async (req, res) => {
-    try {
-        const numero = Number(req.params.id);
-        const reservationId = req.params.idReservation;
-
-        // Vérifier le numéro du catway
-        if (!Number.isInteger(numero) || numero <= 0) {
-            return res.status(400).json({
-                message: "Numéro de catway invalide."
-            });
-        }
-
-        // Vérifier l'identifiant MongoDB
-        if (!mongoose.isValidObjectId(reservationId)) {
-            return res.status(400).json({
-                message: "Identifiant de réservation invalide."
-            });
-        }
-
-        // Supprimer uniquement si la réservation appartient au catway
-        const reservation = await Reservation.findOneAndDelete({
-            _id: reservationId,
-            catwayNumber: numero
-        });
-
-        if (!reservation) {
-            return res.status(404).json({
-                message: "Réservation introuvable pour ce catway."
-            });
-        }
-
-        return res.status(200).json({
-            message: "Réservation supprimée avec succès."
-        });
-
-    } catch (error) {
-        console.error("Erreur suppression réservation :", error.message);
-
-        return res.status(500).json({
-            message: "Impossible de supprimer la réservation."
         });
     }
 });
@@ -840,9 +558,12 @@ app.post("/catways/:id/edit", verifierConnexion, async (req, res) => {
         // Retourner à la liste après modification
         return res.redirect("/catways");
 
-    } catch (error) {
+       } catch (error) {
         console.error("Erreur modification catway :", error.message);
-        return res.status(400).send("Impossible de modifier ce catway.");
+
+        return res.status(500).json({
+            message: "Erreur lors de la modification du catway"
+        });
     }
 });
 
