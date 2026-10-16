@@ -373,6 +373,11 @@ app.get("/test-connexion", (req, res) => {
     res.send("MAGIC CHEF : serveur Port Russell !");
 });
 
+// Afficher le formulaire de création d'utilisateur
+app.get("/users/create", verifierConnexion, (req, res) => {
+    res.render("create-user");
+});
+
 // =====================================
 // GET : CONSULTER UN UTILISATEUR PAR EMAIL
 // =====================================
@@ -623,11 +628,16 @@ app.post("/catways/:id/delete", verifierConnexion, async (req, res) => {
         }
 
         // Sécurité temporaire : seul le catway de test peut être supprimé
-        if (catway.catwayNumber !== 25) {
-            return res.status(403).send(
-                "Suppression réservée au catway de test."
-            );
-        }
+        // Vérifier si le catway possède des réservations
+const reservationExistante = await Reservation.findOne({
+    catwayNumber: catway.catwayNumber
+});
+
+if (reservationExistante) {
+    return res.status(409).send(
+        "Impossible de supprimer ce catway : des réservations y sont associées."
+    );
+}
 
         await Catway.findByIdAndDelete(catway._id);
 
@@ -865,10 +875,6 @@ app.get("/users", verifierConnexion, async (req, res) => {
     }
 });
 
-// Afficher le formulaire de création d'utilisateur
-app.get("/users/create", verifierConnexion, (req, res) => {
-    res.render("create-user");
-});
 
 // Enregistrer un nouvel utilisateur
 app.post("/users/create", verifierConnexion, async (req, res) => {
@@ -1093,6 +1099,7 @@ app.delete("/users/:email", verifierConnexion, async (req, res) => {
     }
 });
 
+
 // Afficher le formulaire de modification
 app.get("/users/:email/edit", verifierConnexion, async (req, res) => {
     try {
@@ -1158,11 +1165,17 @@ app.post("/users/:email/edit", verifierConnexion, async (req, res) => {
 // Supprimer notre utilisateur de démonstration
 app.post("/users/:email/delete", verifierConnexion, async (req, res) => {
     try {
-        if (req.params.email !== "demo.russell@example.com") {
-            return res.status(403).send(
-                "Suppression réservée à l'utilisateur de démonstration."
-            );
-        }
+        const utilisateurConnecte = await User.findById(req.user.userId);
+
+if (!utilisateurConnecte) {
+    return res.status(401).send("Session utilisateur invalide.");
+}
+
+if (utilisateurConnecte.email === req.params.email.trim().toLowerCase()) {
+    return res.status(403).send(
+        "Vous ne pouvez pas supprimer votre propre compte."
+    );
+}
 
         const user = await User.findOneAndDelete({
             email: req.params.email
