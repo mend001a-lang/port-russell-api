@@ -3,6 +3,18 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // Contrôleur : inscription d'un utilisateur
+
+/**
+ * Inscrit un nouvel utilisateur dans MongoDB.
+ * Vérifie les champs obligatoires, contrôle l'unicité
+ * de l'email et hache le mot de passe avec bcrypt.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant name, email et password.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie une confirmation ou une erreur au format JSON.
+ */
+
 const inscrireUtilisateur = async (req, res) => {
 
     const { name, email, password } = req.body || {};
@@ -53,6 +65,15 @@ const inscrireUtilisateur = async (req, res) => {
 
 
 // Contrôleur : connexion d'un utilisateur
+/**
+ * Authentifie un utilisateur à partir de son email et mot de passe.
+ * Vérifie le mot de passe avec bcrypt et génère un token JWT.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant email et password.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie un token JWT ou un message d'erreur au format JSON.
+ */
 const connecterUtilisateur = async (req, res) => {
 
     const { email, password } = req.body || {};

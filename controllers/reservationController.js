@@ -6,6 +6,15 @@ const Catway = require("../models/Catway");
 // =====================================
 // GET : RÉSERVATIONS D'UN CATWAY
 // =====================================
+/**
+ * Récupère toutes les réservations d'un catway.
+ * Vérifie que le catway existe dans MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant le numéro du catway.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie les réservations ou un message d'erreur au format JSON.
+ */
 
 const getReservationsByCatway = async (req, res) => {
     try {
@@ -46,6 +55,15 @@ const getReservationsByCatway = async (req, res) => {
 // GET : UNE RÉSERVATION D'UN CATWAY
 // =====================================
 
+/**
+ * Récupère une réservation précise appartenant à un catway.
+ * Vérifie la validité de l'identifiant MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant id et idReservation.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie la réservation trouvée ou une erreur au format JSON.
+ */
 const getReservationById = async (req, res) => {
     try {
         const numero = Number(req.params.id);
@@ -90,6 +108,15 @@ const getReservationById = async (req, res) => {
 // POST : CRÉER UNE RÉSERVATION
 // =====================================
 
+/**
+ * Crée une réservation pour un catway.
+ * Vérifie les données, les dates et les conflits de réservation.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant le numéro du catway et les informations de réservation.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie la réservation créée ou un message d'erreur au format JSON.
+ */
 const createReservation = async (req, res) => {
     try {
         const numero = Number(req.params.id);
@@ -171,7 +198,16 @@ const createReservation = async (req, res) => {
 // =====================================
 // PUT : MODIFIER UNE RÉSERVATION
 // =====================================
-
+/**
+ * Modifie une réservation existante dans MongoDB.
+ * Vérifie les données, les dates et les conflits
+ * avec les autres réservations du même catway.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant les informations de modification.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie la réservation modifiée ou une erreur au format JSON.
+ */
 const updateReservation = async (req, res) => {
     try {
         const numero = Number(req.params.id);
@@ -257,19 +293,19 @@ const updateReservation = async (req, res) => {
     }
 };
 
-// =====================================
-// EXPORT DU CONTRÔLEUR
-// =====================================
-
-
-// =====================================
-// EXPORT DU CONTRÔLEUR
-// =====================================
-
 
 // =====================================
 // DELETE : SUPPRIMER UNE RÉSERVATION
 // =====================================
+/**
+ * Supprime une réservation appartenant à un catway.
+ * Vérifie le numéro du catway et l'identifiant MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant id et idReservation.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie une confirmation de suppression ou une erreur au format JSON.
+ */
 
 const deleteReservation = async (req, res) => {
     try {

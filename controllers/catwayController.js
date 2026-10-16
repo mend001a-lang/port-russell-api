@@ -1,4 +1,12 @@
 const Catway = require("../models/Catway");
+/**
+ * Récupère la liste de tous les catways depuis MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête HTTP Express.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie la liste des catways au format JSON.
+ */
 const listerCatways = async (req, res) => {
     try {
         const catways = await Catway.find();
@@ -13,8 +21,16 @@ return res.status(500).json({
 });
 
     }
-};;
+};
 
+/**
+ * Récupère un catway à partir de son numéro.
+ *
+ * @async
+ * @param {Object} req - Requête HTTP Express contenant le numéro du catway.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie le catway trouvé ou une erreur au format JSON.
+ */
 const obtenirCatwayParId = async (req, res) => {
     try {
         const id = Number(req.params.id);
@@ -49,6 +65,15 @@ return res.status(500).json({
 });
     }
 };
+
+    /**
+ * Crée un nouveau catway dans MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant les données du catway.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie une confirmation ou une erreur au format JSON.
+ */
 const creerCatway = async (req, res) => {
         try {
     const {
@@ -108,6 +133,15 @@ return res.status(500).json({
 };
 
 // Contrôleur pour modifier l'état d'un catway
+
+    /**
+ * Modifie l'état d'un catway existant dans MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant le numéro et le nouvel état du catway.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie le catway modifié ou un message d'erreur au format JSON.
+ */
 const modifierCatway = async (req, res) => {
      try {
     const id = Number(req.params.id);
@@ -152,6 +186,15 @@ return res.status(500).json({
 };
 
 // Contrôleur pour supprimer un catway
+
+    /**
+ * Supprime un catway de la base de données MongoDB.
+ *
+ * @async
+ * @param {Object} req - Requête Express contenant le numéro du catway.
+ * @param {Object} res - Réponse HTTP Express.
+ * @returns {Promise<void>} Envoie une confirmation de suppression ou une erreur au format JSON.
+ */
 const supprimerCatway = async (req, res) => {
     try {
     const id = Number(req.params.id);
