@@ -22,43 +22,42 @@
 </p>
 
     <table border="1">
-        <thead>
+    <thead>
+        <tr>
+            <th>Numéro</th>
+            <th>Type</th>
+            <th>État</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% catways.forEach(catway => { %>
             <tr>
-                <th>Numéro</th>
-                <th>Type</th>
-                <th>État</th>
-                <th>Action</th>
+                <td><%= catway.catwayNumber %></td>
+                <td><%= catway.catwayType %></td>
+                <td><%= catway.catwayState %></td>
+                <td>
+                    <a href="/catways/<%= catway._id %>/edit">
+                        Modifier
+                    </a>
+
+                    <form
+                        action="/catways/<%= catway._id %>/delete"
+                        method="POST"
+                        style="display:inline;"
+                        onsubmit="return confirm('Voulez-vous vraiment supprimer ce catway ?');"
+                    >
+                        <button type="submit">Supprimer</button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-
-        <tbody>
-            <% catways.forEach(catway => { %>
-                <tr>
-                    <td><%= catway.catwayNumber %></td>
-                    <td><%= catway.catwayType %></td>
-                    <td><%= catway.catwayState %></td>
-                    <td>
-    <td>
-    <a href="/catways/<%= catway._id %>/edit">
-        Modifier
-    </a>
-
-    <% if (catway.catwayNumber === 25) { %>
-        <form
-            action="/catways/<%= catway._id %>/delete"
-            method="POST"
-            style="display:inline;"
-            onsubmit="return confirm('Supprimer ce catway de test ?');"
-        >
-            <button type="submit">Supprimer</button>
-        </form>
-    <% } %>
-</td>
-</td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+        <% }) %>
+    </tbody>
+</table>
+<p>
+    <a href="/dashboard">Retour au tableau de bord</a>
+</p>
 
 </body>
 </html>

@@ -17,6 +17,9 @@
     </nav>
 
     <h2>Liste des utilisateurs</h2>
+    <p>
+    <a href="/users/create">+ Ajouter un utilisateur</a>
+</p>
 
     <table border="1">
         <thead>
@@ -36,7 +39,7 @@
     <a href="/users/<%= encodeURIComponent(user.email) %>/edit">
         Modifier
     </a>
-    <% if (user.email === "demo.russell@example.com") { %>
+   
     <form
         action="/users/<%= encodeURIComponent(user.email) %>/delete"
         method="POST"
@@ -44,13 +47,12 @@
         onsubmit="return confirm('Supprimer cet utilisateur de démonstration ?');"
     >
         <button type="submit">Supprimer</button>
-    </form>
-<% } %>
+        </form>
 </td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+</tr>
+<% }) %>
+</tbody>
+</table>
 
     <p>
         <a href="/dashboard">Retour au tableau de bord</a>
